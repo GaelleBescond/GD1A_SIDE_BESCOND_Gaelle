@@ -1,0 +1,62 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "Level/Level.tmx",
+    "expandedProjectPaths": [
+        "Level",
+        "."
+    ],
+    "file.lastUsedOpenFilter": "Tous les Fichiers (*)",
+    "fileStates": {
+        "": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "E:/ETPA/Level Design/Projet Sidescroller/Level/tuiles_de_jeu.tsx": {
+            "scaleInDock": 1
+        },
+        "Level/Biome_Framboise.tsx": {
+            "scaleInDock": 0.33,
+            "scaleInEditor": 1
+        },
+        "Level/Level.tmx": {
+            "scale": 0.5,
+            "selectedLayer": 9,
+            "viewCenter": {
+                "x": 893,
+                "y": 800
+            }
+        },
+        "Level/Level.tmx#tuiles_de_jeu": {
+            "scaleInDock": 1
+        },
+        "Level/Palette.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 0.25
+        },
+        "Level/Tiles.tsx": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 1
+        }
+    },
+    "last.externalTilesetPath": "E:/ETPA/Level Design/Projet Sidescroller/Level",
+    "last.imagePath": "D:/JV1A/Bescond Gaelle/Wedding-Quest/Phaser/src/assets",
+    "map.height": 50,
+    "map.lastUsedFormat": "tmx",
+    "map.width": 50,
+    "openFiles": [
+        "Level/Level.tmx"
+    ],
+    "project": "Tiled Project.tiled-project",
+    "recentFiles": [
+        "Level/Level.tmx",
+        "Level/Tiles.tsx",
+        "Level/Biome_Framboise.tsx",
+        "Level/Palette.tsx"
+    ],
+    "tileset.embedInMap": true,
+    "tileset.lastUsedFilter": "Fichiers de jeu de tuiles Tiled (*.tsx *.xml)",
+    "tileset.lastUsedFormat": "tsx"
+}
