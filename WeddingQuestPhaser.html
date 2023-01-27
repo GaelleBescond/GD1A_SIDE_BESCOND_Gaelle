@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" /><title>Wedding Quest</title>
+            <script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js">
+
+            </script>
+        <style type="text/css"> body { margin: 0; }</style>
+    </head>
+    <body>
+        <script type="text/javascript">
+
+            var config = {
+                type: Phaser.AUTO,
+                width: 640, height: 640,
+                physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 1000 },
+                    debug: true,
+                }},
+                scene: {preload: preload, create: create, update: update }
+            };
+
+            new Phaser.Game(config);
+            var player; // désigne le sprite du joueur 
+            var clavier; 
+
+            function preload(){
+                this.load.image("background","assets/Background.png")
+                // chargement tuiles de jeu
+                this.load.image("Phaser_tuilesdejeu", "assets/tuilesJeu.png");
+                // chargement de la carte
+                this.load.tilemapTiledJSON("carte", "assets/map.json");  
+                //chargement du personnage
+                this.load.spritesheet("img_perso", "assets/Perso_Design_Jeu_Alpha.png", {
+                    frameWidth: 263,
+                    frameHeight: 541
+                }); 
+            }
+
+            function create() {
+                //chargement du background        
+                this.add.image(800, 800, "background");                 
+                // chargement de la carte
+                const carteDuNiveau = this.add.tilemap("carte");
+
+                // chargement du jeu de tuiles
+                const tileset = carteDuNiveau.addTilesetImage("tuiles_de_jeu","Phaser_tuilesdejeu");  
+                
+                // chargement du calque calque_Dangers
+                const calque_background = carteDuNiveau.createLayer("Dangers", tileset);
+
+                // chargement du calque calque_plateformes
+                const calque_plateformes = carteDuNiveau.createLayer("platforms",tileset);  
+                calque_plateformes.setCollisionByProperty({ estSolide: true }); 
+
+                //chargement du calque_cosmetics
+                const calque_cosmetics = carteDuNiveau.createLayer("Cosmetics",tileset);  
+                calque_plateformes.setCollisionByProperty({ estSolide: true }); 
+                
+                //Apparition du joueur
+                player = this.physics.add.sprite(100, 50, 'img_perso'); 
+                player.setCollideWorldBounds(true);
+                // ajout d'une collision entre le joueur et le calque plateformes
+                this.physics.add.collider(player, calque_plateformes);        
+                
+                
+                //this.physics.add.overlap(player, calque_plateformes,monAlerte);               
+                clavier = this.input.keyboard.createCursorKeys(); 
+
+                // redimentionnement du monde avec les dimensions calculées via tiled
+                this.physics.world.setBounds(0, 0, 1600, 1600);
+                //  ajout du champs de la caméra de taille identique à celle du monde
+                this.cameras.main.setBounds(0, 0, 1600, 1600);
+                // ancrage de la caméra sur le joueur
+                this.cameras.main.startFollow(player);
+                this.cameras.main.setZoom(2);
+
+            }
+
+            function monAlerte(player,calque){
+                console.log(player);
+                console.log(calque);
+            }
+
+            function update(){
+
+                //intégrer le code de la clé usb
+
+                //déplacement
+                if (clavier.right.isDown) {
+                        player.setVelocityX(300);
+                    } 
+                    else if (clavier.left.isDown) {
+                        player.setVelocityX(-300);
+                    } else {
+                        player.setVelocityX(0);
+                } 
+                
+                if (clavier.up.isDown && player.body.touching.down) {
+                    player.setVelocityY(-600);
+                }  
+
+                if (clavier.up.isDown && player.body.blocked.down) {
+                    player.setVelocityY(-400);
+                }  
+                //grimpe
+                if (clavier.right.isDown && player.body.blocked.right) {
+                    player.setVelocityY(-100);
+                }  
+                if (clavier.left.isDown && player.body.blocked.left) {
+                    player.setVelocityY(-100);
+                }  
+
+                
+
+            }
+            /*A faire:
+                Refaire le niveau selon circulation
+                Ajuster les sauts et wall jumps
+                Animer la mariée
+                    Saut en l'air
+                    Chute
+                    Course
+                    Escalade
+                Ajouter vie et stats (dans une nouvelle balise en dessous)
+                Ajouter dangers
+                */
+                
+        </script>
+    </body>
+</html>
