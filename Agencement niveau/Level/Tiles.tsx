@@ -6,122 +6,122 @@
  <image source="../Visuel/Tiles/Tiles.png" width="1600" height="1600"/>
  <tile id="0">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="1">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="2">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="3">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="4">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="5">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="6">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="7">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="8">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="9">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="10">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="11">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="12">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="13">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="14">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="15">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="16">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="17">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="18">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="19">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="20">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="21">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="22">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="23">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="24">
@@ -256,122 +256,122 @@
  </tile>
  <tile id="50">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="51">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="52">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="53">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="54">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="55">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="56">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="57">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="58">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="59">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="60">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="61">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="62">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="63">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="64">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="65">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="66">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="67">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="68">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="69">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="70">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="71">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="72">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="73">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="74">
@@ -506,7 +506,7 @@
  </tile>
  <tile id="100">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="101">
@@ -521,7 +521,7 @@
  </tile>
  <tile id="103">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="104">
@@ -531,7 +531,7 @@
  </tile>
  <tile id="105">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="106">
@@ -541,12 +541,12 @@
  </tile>
  <tile id="107">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="108">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="109">
@@ -561,7 +561,7 @@
  </tile>
  <tile id="111">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="112">
@@ -2306,22 +2306,22 @@
  </tile>
  <tile id="460">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="461">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="462">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="463">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="464">
@@ -2556,22 +2556,22 @@
  </tile>
  <tile id="510">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="511">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="512">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="513">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="514">
@@ -2806,17 +2806,17 @@
  </tile>
  <tile id="560">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="561">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="562">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="563">
@@ -3056,17 +3056,17 @@
  </tile>
  <tile id="610">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="611">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="612">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="613">
@@ -3306,12 +3306,12 @@
  </tile>
  <tile id="660">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="661">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="662">
@@ -3556,7 +3556,7 @@
  </tile>
  <tile id="710">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="711">
@@ -3806,7 +3806,7 @@
  </tile>
  <tile id="760">
   <properties>
-   <property name="estSolide" type="bool" value="true"/>
+   <property name="estSolide" type="bool" value="false"/>
   </properties>
  </tile>
  <tile id="761">

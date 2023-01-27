@@ -16,15 +16,13 @@
                 physics: {
                 default: 'arcade',
                 arcade: {
-                    gravity: { y: 1000 },
+                    gravity: { y: 500 },
                     debug: true,
                 }},
                 scene: {preload: preload, create: create, update: update }
             };
 
-            new Phaser.Game(config);
-            var player; // désigne le sprite du joueur 
-            var clavier; 
+
 
             function preload(){
                 this.load.image("background","assets/Background.png")
@@ -32,91 +30,162 @@
                 this.load.image("Phaser_tuilesdejeu", "assets/tuilesJeu.png");
                 // chargement de la carte
                 this.load.tilemapTiledJSON("carte", "assets/map.json");  
+                //chargement étoile
+                this.load.image('star', 'assets/star.png');
+
                 //chargement du personnage
                 this.load.spritesheet("img_perso", "assets/Perso_Design_Jeu_Alpha.png", {
                     frameWidth: 263,
                     frameHeight: 541
                 }); 
             }
+            
+            new Phaser.Game(config);
+            var player; // désigne le sprite du joueur 
+            var clavier; 
+            var gameOver = false;
+            var toucheLock = true;
+            var wallJumpLock = true;
 
             function create() {
-                //chargement du background        
-                this.add.image(800, 800, "background");                 
-                // chargement de la carte
-                const carteDuNiveau = this.add.tilemap("carte");
+                //chargement des essentiels
+                    //chargement du background        
+                    this.add.image(800, 800, "background");       
+                    // chargement de la carte
+                    const carteDuNiveau = this.add.tilemap("carte");
+                    // chargement du jeu de tuiles
+                    const tileset = carteDuNiveau.addTilesetImage("tuiles_de_jeu","Phaser_tuilesdejeu");  
 
-                // chargement du jeu de tuiles
-                const tileset = carteDuNiveau.addTilesetImage("tuiles_de_jeu","Phaser_tuilesdejeu");  
-                
-                // chargement du calque calque_Dangers
-                const calque_background = carteDuNiveau.createLayer("Dangers", tileset);
+                //chargement des calques
+                    // chargement du calque calque_terrain
+                    const calque_terrain = carteDuNiveau.createLayer("terrain", tileset);  
+                    calque_terrain.setCollisionByProperty({ estSolide: true }); 
 
-                // chargement du calque calque_plateformes
-                const calque_plateformes = carteDuNiveau.createLayer("platforms",tileset);  
-                calque_plateformes.setCollisionByProperty({ estSolide: true }); 
+                    // chargement du calque calque_Dangers
+                    const calque_Dangers = carteDuNiveau.createLayer("dangers_passifs", tileset);
+                    calque_Dangers.setCollisionByProperty({ estSolide: true }); 
 
-                //chargement du calque_cosmetics
-                const calque_cosmetics = carteDuNiveau.createLayer("Cosmetics",tileset);  
-                calque_plateformes.setCollisionByProperty({ estSolide: true }); 
+                    // chargement du calque calque_plateformes
+                    const calque_plateformes = carteDuNiveau.createLayer("platforms",tileset);  
+                    calque_plateformes.setCollisionByProperty({ estSolide: true });
+                    
+                    //chargement du calque_cosmetics
+                    const calque_cosmetics = carteDuNiveau.createLayer("Cosmetics",tileset);  
+                    
+                    //chargement du calque_mechanics
+                    bonus_mechanics = this.physics.add.group();
+                    calque_new_mechanics = carteDuNiveau.getObjectLayer("new_mechanics");
+                    calque_new_mechanics.objects.forEach( calque_new_mechanics =>{
+                        const mechanichiante = bonus_mechanics.create( calque_new_mechanics.x + 16, calque_new_mechanics.y +16, "star").body.setAllowGravity(false);
+                    })
+
+
+
                 
                 //Apparition du joueur
-                player = this.physics.add.sprite(100, 50, 'img_perso'); 
-                player.setCollideWorldBounds(true);
-                // ajout d'une collision entre le joueur et le calque plateformes
-                this.physics.add.collider(player, calque_plateformes);        
-                
-                
-                //this.physics.add.overlap(player, calque_plateformes,monAlerte);               
-                clavier = this.input.keyboard.createCursorKeys(); 
+                    player = this.physics.add.sprite(100, 50, 'img_perso'); 
+                    player.setCollideWorldBounds(true);
+                    // ajout d'une collision entre le joueur et les calques plateformes, terrain, dangers
+                    this.physics.add.collider(player, calque_terrain);  
+                    this.physics.add.collider(player, calque_Dangers);        
+                    this.physics.add.collider(player, calque_plateformes);        
+      
+                     
+                //Intégration des commandes
+                    clavier = this.input.keyboard.createCursorKeys(); 
 
-                // redimentionnement du monde avec les dimensions calculées via tiled
-                this.physics.world.setBounds(0, 0, 1600, 1600);
-                //  ajout du champs de la caméra de taille identique à celle du monde
-                this.cameras.main.setBounds(0, 0, 1600, 1600);
-                // ancrage de la caméra sur le joueur
-                this.cameras.main.startFollow(player);
-                this.cameras.main.setZoom(2);
-
+                //Caméra
+                    // redimensionnement du monde avec les dimensions calculées via tiled
+                    this.physics.world.setBounds(0, 0, 1600, 1600);
+                    //  ajout du champs de la caméra de taille identique à celle du monde
+                    this.cameras.main.setBounds(0, 0, 1600, 1600);
+                    // ancrage de la caméra sur le joueur
+                    this.cameras.main.startFollow(player);
+                    this.cameras.main.setZoom(1);
             }
+            //Interaction murs
+                //déverouillage des touches
+                function lockTouches(){
+                    toucheLock = true;
+                }
+                //Fonction Wall grab left
+                function wallGrabLeft(){
+                    player.setVelocityY(-5);
+                    player.setVelocityX(-15);
+                    // Wall jump gauche
+                    if (clavier.up.isDown && wallJumpLock){
+                        //bloquage des touches pour éviter interférence 
+                        toucheLock = false;
+                        //début cooldown wall jump    
+                        wallJumpLock = false;
+                        //paramètres d'éjection     
+                        player.setVelocityY(-300);
+                        player.setVelocityX(150);
+                        //fin bloquage des touches          
+                        setTimeout(lockTouches, 200)
+                        //fin du cooldown wall jump
+                        setTimeout(lockWallJump, 2000)
+                    }
+                }
+                //Fonction Wall grab right
+                function wallGrabRight(){
+                    player.setVelocityY(-5);
+                    player.setVelocityX(15);
+                    // Wall jump droite
+                    if (clavier.up.isDown &&  wallJumpLock){
+                        toucheLock = false;
+                        wallJumpLock = false;
+                        player.setVelocityY(-300);
+                        player.setVelocityX(-150);
+                        setTimeout(lockTouches, 200)
+                        setTimeout(lockWallJump, 2000)
+                    }
+                }
+                //déverouillage du wall jump
+                function lockWallJump(){
+                    wallJumpLock = true;
+                }
+                    
 
-            function monAlerte(player,calque){
-                console.log(player);
-                console.log(calque);
-            }
-
+            //Jeu
             function update(){
 
-                //intégrer le code de la clé usb
-
                 //déplacement
-                if (clavier.right.isDown) {
-                        player.setVelocityX(300);
+                //droite
+                if (clavier.right.isDown && toucheLock) {
+                        player.setVelocityX(200);
                     } 
-                    else if (clavier.left.isDown) {
-                        player.setVelocityX(-300);
-                    } else {
+                    //gauche
+                    else if (clavier.left.isDown && toucheLock) {
+                        player.setVelocityX(-200);
+                    } 
+                    else if (clavier.left.isUp && clavier.right.isUp && toucheLock){
+                    //idle
                         player.setVelocityX(0);
-                } 
+                    } 
                 
-                if (clavier.up.isDown && player.body.touching.down) {
-                    player.setVelocityY(-600);
-                }  
-
+                //Saut
                 if (clavier.up.isDown && player.body.blocked.down) {
-                    player.setVelocityY(-400);
+                    player.setVelocityY(-300);
                 }  
-                //grimpe
-                if (clavier.right.isDown && player.body.blocked.right) {
-                    player.setVelocityY(-100);
-                }  
-                if (clavier.left.isDown && player.body.blocked.left) {
+                //glide
+                if (clavier.up.isDown && player.body.touching.down) {
                     player.setVelocityY(-100);
                 }  
 
-                
+                //Interaction mur
+                    // Wall grab gauche
+                    if (clavier.left.isDown && player.body.blocked.left){
+                        wallGrabLeft();
+                    }
+                    // Wall grab droite
+                    else if (clavier.right.isDown && player.body.blocked.right){
+                        wallGrabRight();
+                    }
 
             }
             /*A faire:
+                Créer des plateformes fines?
                 Refaire le niveau selon circulation
                 Ajuster les sauts et wall jumps
                 Animer la mariée
@@ -125,6 +194,8 @@
                     Course
                     Escalade
                 Ajouter vie et stats (dans une nouvelle balise en dessous)
+                Ajouter display Cooldown Wall jump
+                Ajouter physique dans liquide
                 Ajouter dangers
                 */
                 
