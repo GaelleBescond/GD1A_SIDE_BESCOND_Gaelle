@@ -42,55 +42,57 @@
             
             new Phaser.Game(config);
             var player; // désigne le sprite du joueur 
-            var clavier; 
-            var gameOver = false;
-            var toucheLock = true;
-            var wallJumpLock = true;
+            var clavier; //commandes
+            var gameOver = false; //fin de partie
+            var toucheLock = true; //verrouillage des commandes
+            var wallJumpLock = true; //cooldown du wall jump
+            var gameplayLevel = 0; // niveau de gameplay, débloquage de nouvelles mécaniques
+            var idleGaze = false; //Orientation du regard quand le personnage est immobile, selon la dernière direction
 
             function create() {
                 //chargement des essentiels
                     //chargement du background        
-                    this.add.image(800, 800, "background");       
+                       this.add.image(800, 800, "background");       
                     // chargement de la carte
-                    const carteDuNiveau = this.add.tilemap("carte");
+                      const carteDuNiveau = this.add.tilemap("carte");
                     // chargement du jeu de tuiles
-                    const tileset = carteDuNiveau.addTilesetImage("tuiles_de_jeu","Phaser_tuilesdejeu");  
+                      const tileset = carteDuNiveau.addTilesetImage("tuiles_de_jeu","Phaser_tuilesdejeu");  
+                    // Display de texte
+                        //à déplacer pour qu'il reste au dessus de la tête
+                       title=this.add.text(16,128,'Your beloved is one on the other side',{fontSize:'16px',fill:'#000'});
 
                 //chargement des calques
                     // chargement du calque calque_terrain
-                    const calque_terrain = carteDuNiveau.createLayer("terrain", tileset);  
-                    calque_terrain.setCollisionByProperty({ estSolide: true }); 
+                       const calque_terrain = carteDuNiveau.createLayer("terrain", tileset);  
+                       calque_terrain.setCollisionByProperty({ estSolide: true }); 
 
                     // chargement du calque calque_Dangers
-                    const calque_Dangers = carteDuNiveau.createLayer("dangers_passifs", tileset);
-                    calque_Dangers.setCollisionByProperty({ estSolide: true }); 
+                        const calque_Dangers = carteDuNiveau.createLayer("dangers_passifs", tileset);
+                        calque_Dangers.setCollisionByProperty({ estSolide: true }); 
 
                     // chargement du calque calque_plateformes
-                    const calque_plateformes = carteDuNiveau.createLayer("platforms",tileset);  
-                    calque_plateformes.setCollisionByProperty({ estSolide: true });
+                        const calque_plateformes = carteDuNiveau.createLayer("platforms",tileset);  
+                        calque_plateformes.setCollisionByProperty({ estSolide: true });
                     
                     //chargement du calque_cosmetics
-                    const calque_cosmetics = carteDuNiveau.createLayer("Cosmetics",tileset);  
+                        const calque_cosmetics = carteDuNiveau.createLayer("Cosmetics",tileset);  
                     
                     //chargement du calque_mechanics
-                    bonus_mechanics = this.physics.add.group();
-                    calque_new_mechanics = carteDuNiveau.getObjectLayer("new_mechanics");
-                    calque_new_mechanics.objects.forEach( calque_new_mechanics =>{
-                        const mechanichiante = bonus_mechanics.create( calque_new_mechanics.x + 16, calque_new_mechanics.y +16, "star").body.setAllowGravity(false);
-                    })
-
-
-
+                        bonus_mechanics = this.physics.add.group();
+                        calque_new_mechanics = carteDuNiveau.getObjectLayer("new_mechanics");
+                        //Overlap des bonus
+                        calque_new_mechanics.objects.forEach( calque_new_mechanics =>{
+                            const mechanichiante = bonus_mechanics.create( calque_new_mechanics.x + 16, calque_new_mechanics.y +16, "star").body.setAllowGravity(false);});
+                            this.physics.add.overlap(bonus_mechanics, player, collectStar);
                 
                 //Apparition du joueur
-                    player = this.physics.add.sprite(100, 50, 'img_perso'); 
-                    player.setCollideWorldBounds(true);
+                        player = this.physics.add.sprite(100, 50, 'img_perso'); 
+                        player.setCollideWorldBounds(true);
                     // ajout d'une collision entre le joueur et les calques plateformes, terrain, dangers
-                    this.physics.add.collider(player, calque_terrain);  
-                    this.physics.add.collider(player, calque_Dangers);        
-                    this.physics.add.collider(player, calque_plateformes);        
-      
-                     
+                        this.physics.add.collider(player, calque_terrain);  
+                        this.physics.add.collider(player, calque_Dangers);        
+                        this.physics.add.collider(player, calque_plateformes);        
+                  
                 //Intégration des commandes
                     clavier = this.input.keyboard.createCursorKeys(); 
 
@@ -101,15 +103,16 @@
                     this.cameras.main.setBounds(0, 0, 1600, 1600);
                     // ancrage de la caméra sur le joueur
                     this.cameras.main.startFollow(player);
-                    this.cameras.main.setZoom(1);
+                    this.cameras.main.setZoom(1.5);
             }
             //Interaction murs
+                //Largement optimisable en fusionnant les deux fonctions de wallgrab/jump
                 //déverouillage des touches
-                function lockTouches(){
+                    function lockTouches(){
                     toucheLock = true;
                 }
                 //Fonction Wall grab left
-                function wallGrabLeft(){
+                    function wallGrabLeft(){
                     player.setVelocityY(-5);
                     player.setVelocityX(-15);
                     // Wall jump gauche
@@ -128,7 +131,7 @@
                     }
                 }
                 //Fonction Wall grab right
-                function wallGrabRight(){
+                    function wallGrabRight(){
                     player.setVelocityY(-5);
                     player.setVelocityX(15);
                     // Wall jump droite
@@ -142,30 +145,55 @@
                     }
                 }
                 //déverouillage du wall jump
-                function lockWallJump(){
+                    function lockWallJump(){
                     wallJumpLock = true;
                 }
                     
+            //Amélioration du kit de déplacement
+                function collectStar(bonus_mechanics, player){
+                    bonus_mechanics.disableBody(true); // l’étoile disparaît
+                    gameplayLevel += 1; //augmente le niveau de mécanique de 1
+                }
+                    //Ajouter le nouveau texte indiquant le bonus ramassé
 
+            
+            //Dangers, feuilles vertes
+                function hitLeaf(player, leaf){
+                    this.physics.pause();
+                    player.setTint(0xff0000);
+                    player.anims.play('turn');
+                    gameOver = true;
+                }    
+
+            
             //Jeu
             function update(){
 
                 //déplacement
                 //droite
                 if (clavier.right.isDown && toucheLock) {
-                        player.setVelocityX(200);
-                    } 
+                    player.setVelocityX(200);
+                    idleGaze = true;
+                } 
                     //gauche
-                    else if (clavier.left.isDown && toucheLock) {
-                        player.setVelocityX(-200);
-                    } 
-                    else if (clavier.left.isUp && clavier.right.isUp && toucheLock){
+                else if (clavier.left.isDown && toucheLock) {
+                    player.setVelocityX(-200);
+                    idleGaze = false;
+                } 
+                else if (clavier.left.isUp && clavier.right.isUp && toucheLock){
                     //idle
-                        player.setVelocityX(0);
-                    } 
+                    player.setVelocityX(0);
+                        if (idleGaze){
+
+                        }
+                        else {
+
+                        }
+
+                } 
                 
                 //Saut
-                if (clavier.up.isDown && player.body.blocked.down) {
+                if (clavier.up.isDown && player.body.blocked.down && (gameplayLevel >= 1)) {
                     player.setVelocityY(-300);
                 }  
                 //glide
@@ -175,28 +203,31 @@
 
                 //Interaction mur
                     // Wall grab gauche
-                    if (clavier.left.isDown && player.body.blocked.left){
+                    if (clavier.left.isDown && player.body.blocked.left && (gameplayLevel >= 3)){
                         wallGrabLeft();
                     }
                     // Wall grab droite
-                    else if (clavier.right.isDown && player.body.blocked.right){
+                    else if (clavier.right.isDown && player.body.blocked.right && (gameplayLevel >= 3)){
                         wallGrabRight();
                     }
 
             }
             /*A faire:
+                Déverrouillage progressif des mécaniques (level 1/2/3)
                 Créer des plateformes fines?
                 Refaire le niveau selon circulation
                 Ajuster les sauts et wall jumps
                 Animer la mariée
-                    Saut en l'air
-                    Chute
-                    Course
-                    Escalade
-                Ajouter vie et stats (dans une nouvelle balise en dessous)
+                    Saut en l'air (1 sprite x2)
+                    Chute (1 sprite x2)
+                    Course (4 sprites x2)
+                    Accrochage mur (1 sprite x2)
+                    Idle (1 sprite x2, vanilla regarde déjà vers la gauche)
+                Ajouter vie (robe intacte => déchirée)
                 Ajouter display Cooldown Wall jump
                 Ajouter physique dans liquide
                 Ajouter dangers
+                Ajouter messages au dessus de la tête du personnage
                 */
                 
         </script>
