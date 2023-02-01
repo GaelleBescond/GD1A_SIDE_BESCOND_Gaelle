@@ -32,12 +32,26 @@
                 "y": 1300.5
             }
         },
-        "Level/Level.tmx": {
-            "scale": 0.75,
-            "selectedLayer": 2,
+        "Level/Level To export2.tmx": {
+            "expandedObjectLayers": [
+                22
+            ],
+            "scale": 0.4922187499999999,
+            "selectedLayer": 4,
             "viewCenter": {
-                "x": 659.3333333333334,
-                "y": 402.6666666666667
+                "x": 798.4254967938546,
+                "y": 798.4254967938543
+            }
+        },
+        "Level/Level.tmx": {
+            "expandedObjectLayers": [
+                25
+            ],
+            "scale": 0.5,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 558,
+                "y": 660
             }
         },
         "Level/Level.tmx#tuiles_de_jeu": {
@@ -48,11 +62,11 @@
             "scaleInEditor": 0.25
         },
         "Level/Tiles.tsx": {
-            "scaleInDock": 1.5,
+            "scaleInDock": 1,
             "scaleInEditor": 1
         }
     },
-    "last.exportedFilePath": "D:/JV1A/Bescond Gaelle/Wedding-Quest/Phaser/assets",
+    "last.exportedFilePath": "D:/JV1A/Bescond Gaelle/Wedding-Quest/assets",
     "last.externalTilesetPath": "D:/JV1A/Bescond Gaelle/Wedding-Quest/Phaser/src/assets",
     "last.imagePath": "D:/JV1A/Bescond Gaelle/Wedding-Quest/Phaser/src/assets",
     "lastUsedTilesetExportFilter": "Tous les Fichiers (*)",
@@ -61,14 +75,14 @@
     "map.lastUsedFormat": "tmx",
     "map.width": 50,
     "openFiles": [
-        "Level/Level.tmx",
-        "Level/Tiles.tsx"
+        "Level/Level.tmx"
     ],
     "project": "Tiled Project.tiled-project",
     "property.type": "bool",
     "recentFiles": [
-        "Level/Tiles.tsx",
         "Level/Level.tmx",
+        "Level/Level To export2.tmx",
+        "Level/Tiles.tsx",
         "Level/Level To export.tmx",
         "Level/Biome_Framboise.tsx",
         "Level/Palette.tsx"

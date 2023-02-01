@@ -25,7 +25,14 @@
 
 
             function preload(){
+                //chargement sky
+                this.load.image("sky","assets/Sky.png")
+                //chargement surface
+                this.load.image("surface","assets/Surface.png")
+                //chargement background
                 this.load.image("background","assets/Background.png")
+                //chargement foreground              
+                this.load.image("foreground","assets/Cascade.png")
                 // chargement tuiles de jeu
                 this.load.image("Phaser_tuilesdejeu", "assets/tuilesJeu.png");
                 // chargement de la carte
@@ -34,10 +41,14 @@
                 this.load.image('star', 'assets/star.png');
 
                 //chargement du personnage
+                
                 this.load.spritesheet("img_perso", "assets/Perso_Design_Jeu_Alpha.png", {
                     frameWidth: 263,
                     frameHeight: 541
                 }); 
+                               
+                //this.load.spritesheet('persoX','assets/perso.png',
+                //    { frameWidth: 24, frameHeight: 64 });
             }
             
             new Phaser.Game(config);
@@ -49,18 +60,29 @@
             var gameplayLevel = 0; // niveau de gameplay, débloquage de nouvelles mécaniques
             var idleGaze = false; //Orientation du regard quand le personnage est immobile, selon la dernière direction
 
+            /*//////////////////////////////////////////////////////////////////////////
+
+                            FUNCTION CREATE
+
+            //////////////////////////////////////////////////////////////////////////*/
             function create() {
-                //chargement des essentiels
+                //chargement des essentiels                
+                    //chargement du ciel  
+                        this.skyparallax = this.add.tileSprite(0, 0, 1600, 1600, "sky");
+                        this.skyparallax.setOrigin(0, 0);   
+                        this.skyparallax.setScrollFactor(0.2);
+
                     //chargement du background        
-                       this.add.image(800, 800, "background");       
+                       this.add.image(800, 800, "background");
+                    //chargement de la surface   
+                       this.add.image(800, 800, "surface");
+                       
+                       
                     // chargement de la carte
                       const carteDuNiveau = this.add.tilemap("carte");
                     // chargement du jeu de tuiles
                       const tileset = carteDuNiveau.addTilesetImage("tuiles_de_jeu","Phaser_tuilesdejeu");  
-                    // Display de texte
-                        //à déplacer pour qu'il reste au dessus de la tête
-                       title=this.add.text(16,128,'Your beloved is one on the other side',{fontSize:'16px',fill:'#000'});
-
+                    
                 //chargement des calques
                     // chargement du calque calque_terrain
                        const calque_terrain = carteDuNiveau.createLayer("terrain", tileset);  
@@ -73,10 +95,29 @@
                     // chargement du calque calque_plateformes
                         const calque_plateformes = carteDuNiveau.createLayer("platforms",tileset);  
                         calque_plateformes.setCollisionByProperty({ estSolide: true });
-                    
+
+                    //Apparition du joueur
+                    player = this.physics.add.sprite(50, 200, 'img_perso'); 
+                        player.setCollideWorldBounds(true);
+                    // ajout d'une collision entre le joueur et les calques plateformes, terrain, dangers
+                        this.physics.add.collider(player, calque_terrain);  
+                        this.physics.add.collider(player, calque_Dangers);        
+                        this.physics.add.collider(player, calque_plateformes); 
+
                     //chargement du calque_cosmetics
                         const calque_cosmetics = carteDuNiveau.createLayer("Cosmetics",tileset);  
-                    
+                                        
+                    //chargement du calque_cosmetics_pratique_3
+                    const calque_cosmetics_3 = carteDuNiveau.createLayer("Cosmetics_Pratique_3",tileset);  
+
+                    //chargement du calque_cosmetics_pratique_2
+                    const calque_cosmetics_2 = carteDuNiveau.createLayer("Cosmetics_Pratique_2",tileset);  
+
+                    //chargement du calque_cosmetics_pratique
+                    const calque_cosmetics_1 = carteDuNiveau.createLayer("Cosmetics_Pratique",tileset);
+                   
+                   
+                   
                     //chargement du calque_mechanics
                         bonus_mechanics = this.physics.add.group();
                         calque_new_mechanics = carteDuNiveau.getObjectLayer("new_mechanics");
@@ -84,15 +125,15 @@
                         calque_new_mechanics.objects.forEach( calque_new_mechanics =>{
                             const mechanichiante = bonus_mechanics.create( calque_new_mechanics.x + 16, calque_new_mechanics.y +16, "star").body.setAllowGravity(false);});
                             this.physics.add.overlap(bonus_mechanics, player, collectStar);
-                
-                //Apparition du joueur
-                        player = this.physics.add.sprite(100, 50, 'img_perso'); 
-                        player.setCollideWorldBounds(true);
-                    // ajout d'une collision entre le joueur et les calques plateformes, terrain, dangers
-                        this.physics.add.collider(player, calque_terrain);  
-                        this.physics.add.collider(player, calque_Dangers);        
-                        this.physics.add.collider(player, calque_plateformes);        
-                  
+
+                //chargement du foreground
+                this.add.image(800, 800, "foreground");  
+
+                //chargement du calque_cosmetics_Cascade
+                const calque_cosmetics_cascade = carteDuNiveau.createLayer("Cosmetics_Cascade",tileset);
+                // Display de texte
+                    title=this.add.text(160,260,'Your beloved one is on the other side',{fontSize:'16px',fill:'#000'}).setScrollFactor(0);
+
                 //Intégration des commandes
                     clavier = this.input.keyboard.createCursorKeys(); 
 
@@ -105,6 +146,12 @@
                     this.cameras.main.startFollow(player);
                     this.cameras.main.setZoom(1.5);
             }
+            
+            /*//////////////////////////////////////////////////////////////////////////
+            
+                            FUNCTIONS FOR THE GAME
+            
+            /////////////////////////////////////////////////////////////////////////*/
             //Interaction murs
                 //Largement optimisable en fusionnant les deux fonctions de wallgrab/jump
                 //déverouillage des touches
@@ -113,8 +160,13 @@
                 }
                 //Fonction Wall grab left
                     function wallGrabLeft(){
-                    player.setVelocityY(-5);
-                    player.setVelocityX(-15);
+                        if (gameplayLevel >=3){
+                            player.setVelocityY(-35);
+                            player.setVelocityX(0);
+                        } else{
+                            player.setVelocityY(5);
+                            player.setVelocityX(0);
+                        }
                     // Wall jump gauche
                     if (clavier.up.isDown && wallJumpLock){
                         //bloquage des touches pour éviter interférence 
@@ -132,8 +184,13 @@
                 }
                 //Fonction Wall grab right
                     function wallGrabRight(){
-                    player.setVelocityY(-5);
-                    player.setVelocityX(15);
+                        if (gameplayLevel >=3){
+                            player.setVelocityY(-35);
+                            player.setVelocityX(0);
+                        } else{
+                            player.setVelocityY(-5);
+                            player.setVelocityX(0);
+                        }
                     // Wall jump droite
                     if (clavier.up.isDown &&  wallJumpLock){
                         toucheLock = false;
@@ -150,8 +207,8 @@
                 }
                     
             //Amélioration du kit de déplacement
-                function collectStar(bonus_mechanics, player){
-                    bonus_mechanics.disableBody(true); // l’étoile disparaît
+                function collectStar(player, bonus_mechanics){
+                    bonus_mechanics.disableBody(true, true); // l’étoile disparaît
                     gameplayLevel += 1; //augmente le niveau de mécanique de 1
                 }
                     //Ajouter le nouveau texte indiquant le bonus ramassé
@@ -165,10 +222,15 @@
                     gameOver = true;
                 }    
 
-            
-            //Jeu
-            function update(){
 
+            /*//////////////////////////////////////////////////////////////////////////
+
+                            FUNCTION UPDATE
+
+            //////////////////////////////////////////////////////////////////////////*/
+            function update(){
+                //Parallaxe
+                //this.sky.tilePositionX = this.myCam.scrollX * .3;
                 //déplacement
                 //droite
                 if (clavier.right.isDown && toucheLock) {
@@ -203,17 +265,16 @@
 
                 //Interaction mur
                     // Wall grab gauche
-                    if (clavier.left.isDown && player.body.blocked.left && (gameplayLevel >= 3)){
+                    if (clavier.left.isDown && player.body.blocked.left && (gameplayLevel >= 2)){
                         wallGrabLeft();
                     }
                     // Wall grab droite
-                    else if (clavier.right.isDown && player.body.blocked.right && (gameplayLevel >= 3)){
+                    else if (clavier.right.isDown && player.body.blocked.right && (gameplayLevel >= 2)){
                         wallGrabRight();
                     }
 
             }
             /*A faire:
-                Déverrouillage progressif des mécaniques (level 1/2/3)
                 Créer des plateformes fines?
                 Refaire le niveau selon circulation
                 Ajuster les sauts et wall jumps
@@ -227,7 +288,6 @@
                 Ajouter display Cooldown Wall jump
                 Ajouter physique dans liquide
                 Ajouter dangers
-                Ajouter messages au dessus de la tête du personnage
                 */
                 
         </script>
