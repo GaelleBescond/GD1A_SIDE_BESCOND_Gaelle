@@ -22,8 +22,15 @@
                 scene: {preload: preload, create: create, update: update }
             };
 
+            /*A faire:
+                Ajouter points de vie et game over
+                Ajuster les sauts et wall jumps
+                Ajouter vie (robe intacte => déchirée)
+                Ajouter display Cooldown Wall jump
+                Ajouter physique dans liquide
 
-
+                */
+                
             function preload(){
                 //chargement sky
                 this.load.image("sky","assets/Sky.png")
@@ -39,6 +46,10 @@
                 this.load.tilemapTiledJSON("carte", "assets/map.json");  
                 //chargement étoile
                 this.load.image('star', 'assets/star.png');
+                //chargement plateforme
+                this.load.image('platforms', 'assets/platforms.png');
+                //chargement danger
+                this.load.image('danger', 'assets/danger.png');
 
                 //chargement du personnage
                 
@@ -59,12 +70,16 @@
             var wallJumpLock = true; //cooldown du wall jump
             var gameplayLevel = 0; // niveau de gameplay, débloquage de nouvelles mécaniques
             var idleGaze = false; //Orientation du regard quand le personnage est immobile, selon la dernière direction
+            var text = "Your beloved is on the other side" //texte affiché lors d'évènements
+            var hp = 3; //character's hp
+            var iframe = false; //iframe enabled after being hit
 
             /*//////////////////////////////////////////////////////////////////////////
 
                             FUNCTION CREATE
 
             //////////////////////////////////////////////////////////////////////////*/
+
             function create() {
                 //chargement des essentiels                
                     //chargement du ciel  
@@ -90,11 +105,7 @@
 
                     // chargement du calque calque_Dangers
                         const calque_Dangers = carteDuNiveau.createLayer("dangers_passifs", tileset);
-                        calque_Dangers.setCollisionByProperty({ estSolide: true }); 
 
-                    // chargement du calque calque_plateformes
-                        const calque_plateformes = carteDuNiveau.createLayer("platforms",tileset);  
-                        calque_plateformes.setCollisionByProperty({ estSolide: true });
 
                     //Apparition du joueur
                     player = this.physics.add.sprite(50, 200, 'img_perso'); 
@@ -102,7 +113,6 @@
                     // ajout d'une collision entre le joueur et les calques plateformes, terrain, dangers
                         this.physics.add.collider(player, calque_terrain);  
                         this.physics.add.collider(player, calque_Dangers);        
-                        this.physics.add.collider(player, calque_plateformes); 
 
                     //chargement du calque_cosmetics
                         const calque_cosmetics = carteDuNiveau.createLayer("Cosmetics",tileset);  
@@ -116,8 +126,15 @@
                     //chargement du calque_cosmetics_pratique
                     const calque_cosmetics_1 = carteDuNiveau.createLayer("Cosmetics_Pratique",tileset);
                    
-                   
-                   
+
+                    //chargement du calque_plateformes
+                    plateformes = this.physics.add.group();
+                        calque_platforms = carteDuNiveau.getObjectLayer("platforms");
+                        //Safe spot to land on
+                        calque_platforms.objects.forEach( calque_platforms =>{
+                            const plateformeichiante = plateformes.create( calque_platforms.x + 16, calque_platforms.y +3, "platforms").body.setAllowGravity(false).setImmovable(true);});
+                            this.physics.add.collider(plateformes, player);
+
                     //chargement du calque_mechanics
                         bonus_mechanics = this.physics.add.group();
                         calque_new_mechanics = carteDuNiveau.getObjectLayer("new_mechanics");
@@ -126,13 +143,23 @@
                             const mechanichiante = bonus_mechanics.create( calque_new_mechanics.x + 16, calque_new_mechanics.y +16, "star").body.setAllowGravity(false);});
                             this.physics.add.overlap(bonus_mechanics, player, collectStar);
 
-                //chargement du foreground
+
+                    //chargement des hitboxes des dangers                    
+                    feuilles = this.physics.add.group();
+                        calque_hitboxes = carteDuNiveau.getObjectLayer("Danger_Hitboxes");
+                        //Safe spot to land on
+                        calque_hitboxes.objects.forEach( calque_hitboxes =>{
+                            const feuillichiante = feuilles.create( calque_hitboxes.x + 16, calque_hitboxes.y +16, "danger").body.setAllowGravity(false).setImmovable(true);});
+                            this.physics.add.overlap(feuilles, player, hitLeaf);
+                            
+
+                //chargement du foreground (cascade)
                 this.add.image(800, 800, "foreground");  
 
-                //chargement du calque_cosmetics_Cascade
+                //chargement du calque_cosmetics_Cascade (ajustement du visuel final)
                 const calque_cosmetics_cascade = carteDuNiveau.createLayer("Cosmetics_Cascade",tileset);
                 // Display de texte
-                    title=this.add.text(160,260,'Your beloved one is on the other side',{fontSize:'16px',fill:'#000'}).setScrollFactor(0);
+                    title=this.add.text(160,260,text,{fontSize:'16px',fill:'#000'}).setScrollFactor(0);
 
                 //Intégration des commandes
                     clavier = this.input.keyboard.createCursorKeys(); 
@@ -152,19 +179,24 @@
                             FUNCTIONS FOR THE GAME
             
             /////////////////////////////////////////////////////////////////////////*/
+
             //Interaction murs
                 //Largement optimisable en fusionnant les deux fonctions de wallgrab/jump
                 //déverouillage des touches
                     function lockTouches(){
                     toucheLock = true;
                 }
+                //déverouillage du wall jump
+                    function lockWallJump(){
+                    wallJumpLock = true;
+                }
                 //Fonction Wall grab left
                     function wallGrabLeft(){
                         if (gameplayLevel >=3){
-                            player.setVelocityY(-35);
+                            player.setVelocityY(-55);
                             player.setVelocityX(0);
                         } else{
-                            player.setVelocityY(5);
+                            player.setVelocityY(-5);
                             player.setVelocityX(0);
                         }
                     // Wall jump gauche
@@ -179,15 +211,15 @@
                         //fin bloquage des touches          
                         setTimeout(lockTouches, 200)
                         //fin du cooldown wall jump
-                        setTimeout(lockWallJump, 2000)
+                        setTimeout(lockWallJump, 1000)
                     }
                 }
                 //Fonction Wall grab right
                     function wallGrabRight(){
                         if (gameplayLevel >=3){
-                            player.setVelocityY(-35);
+                            player.setVelocityY(-55);
                             player.setVelocityX(0);
-                        } else{
+                        } else {
                             player.setVelocityY(-5);
                             player.setVelocityX(0);
                         }
@@ -197,47 +229,57 @@
                         wallJumpLock = false;
                         player.setVelocityY(-300);
                         player.setVelocityX(-150);
-                        setTimeout(lockTouches, 200)
-                        setTimeout(lockWallJump, 2000)
+                        setTimeout(lockTouches, 300)
+                        setTimeout(lockWallJump, 1000)
                     }
-                }
-                //déverouillage du wall jump
-                    function lockWallJump(){
-                    wallJumpLock = true;
                 }
                     
             //Amélioration du kit de déplacement
                 function collectStar(player, bonus_mechanics){
                     bonus_mechanics.disableBody(true, true); // l’étoile disparaît
                     gameplayLevel += 1; //augmente le niveau de mécanique de 1
+                    text = "You obtained a new mechanic";
                 }
                     //Ajouter le nouveau texte indiquant le bonus ramassé
 
             
             //Dangers, feuilles vertes
                 function hitLeaf(player, leaf){
-                    this.physics.pause();
+
                     player.setTint(0xff0000);
                     player.anims.play('turn');
                     gameOver = true;
                 }    
+            
 
 
+
+            //Iframe after being hit
+
+
+
+            //Nettoyeur de texte    
+                function removeText() {
+                    text.destroy();
+                }
+                
             /*//////////////////////////////////////////////////////////////////////////
 
                             FUNCTION UPDATE
 
             //////////////////////////////////////////////////////////////////////////*/
+
             function update(){
-                //Parallaxe
-                //this.sky.tilePositionX = this.myCam.scrollX * .3;
-                //déplacement
+
+                // Display de texte
+
+            //déplacement
                 //droite
                 if (clavier.right.isDown && toucheLock) {
                     player.setVelocityX(200);
                     idleGaze = true;
                 } 
-                    //gauche
+                //gauche
                 else if (clavier.left.isDown && toucheLock) {
                     player.setVelocityX(-200);
                     idleGaze = false;
@@ -245,51 +287,23 @@
                 else if (clavier.left.isUp && clavier.right.isUp && toucheLock){
                     //idle
                     player.setVelocityX(0);
-                        if (idleGaze){
-
-                        }
-                        else {
-
-                        }
-
                 } 
                 
                 //Saut
                 if (clavier.up.isDown && player.body.blocked.down && (gameplayLevel >= 1)) {
                     player.setVelocityY(-300);
                 }  
-                //glide
-                if (clavier.up.isDown && player.body.touching.down) {
-                    player.setVelocityY(-100);
-                }  
 
-                //Interaction mur
-                    // Wall grab gauche
-                    if (clavier.left.isDown && player.body.blocked.left && (gameplayLevel >= 2)){
-                        wallGrabLeft();
-                    }
-                    // Wall grab droite
-                    else if (clavier.right.isDown && player.body.blocked.right && (gameplayLevel >= 2)){
-                        wallGrabRight();
-                    }
+                // Wall grab gauche
+                if (clavier.left.isDown && player.body.blocked.left && (gameplayLevel >= 2)){
+                    wallGrabLeft();
+                }
+                // Wall grab droite
+                else if (clavier.right.isDown && player.body.blocked.right && (gameplayLevel >= 2)){
+                    wallGrabRight();
+                }
 
             }
-            /*A faire:
-                Créer des plateformes fines?
-                Refaire le niveau selon circulation
-                Ajuster les sauts et wall jumps
-                Animer la mariée
-                    Saut en l'air (1 sprite x2)
-                    Chute (1 sprite x2)
-                    Course (4 sprites x2)
-                    Accrochage mur (1 sprite x2)
-                    Idle (1 sprite x2, vanilla regarde déjà vers la gauche)
-                Ajouter vie (robe intacte => déchirée)
-                Ajouter display Cooldown Wall jump
-                Ajouter physique dans liquide
-                Ajouter dangers
-                */
-                
         </script>
     </body>
 </html>

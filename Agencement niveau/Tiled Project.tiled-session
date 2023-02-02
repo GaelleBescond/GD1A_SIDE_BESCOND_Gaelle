@@ -5,8 +5,8 @@
     },
     "activeFile": "Level/Level.tmx",
     "expandedProjectPaths": [
-        "Level",
-        "."
+        ".",
+        "Level"
     ],
     "file.lastUsedOpenFilter": "Tous les Fichiers (*)",
     "fileStates": {
@@ -47,11 +47,11 @@
             "expandedObjectLayers": [
                 25
             ],
-            "scale": 0.5,
-            "selectedLayer": 3,
+            "scale": 1.5,
+            "selectedLayer": 7,
             "viewCenter": {
-                "x": 558,
-                "y": 660
+                "x": 1358.3333333333333,
+                "y": 297.33333333333326
             }
         },
         "Level/Level.tmx#tuiles_de_jeu": {
