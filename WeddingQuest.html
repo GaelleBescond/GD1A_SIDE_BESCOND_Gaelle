@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Wedding Quest</title>
+        <link rel="icon" type="image/png" href="assets/logo.png" />
+            <script src="//cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js">
+            </script>
+        <style type="text/css"> body { margin: 0; }</style>
+    </head>
+    <body>
+        <script type="text/javascript">
+
+            var config = {
+                type: Phaser.AUTO,
+                width: 640, height: 640,
+                physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 500 },
+                    debug: false,
+                }},
+                scene: {preload: preload, create: create, update: update },
+                input:{gamepad:true}
+            }
+
+            /*A faire:
+                Ajouter points de vie
+                Ajouter vie (robe intacte => déchirée)
+                Ajouter display Cooldown Wall jump
+                Ajouter physique dans liquide
+
+                */
+            /*//////////////////////////////////////////////////////////////////////////
+
+                            FUNCTION PRELOAD
+
+            //////////////////////////////////////////////////////////////////////////*/
+            function preload(){
+                //chargement sky
+                this.load.image("sky","assets/Sky.png")
+                //chargement surface
+                this.load.image("surface","assets/Surface.png")
+                //chargement background
+                this.load.image("background","assets/Background.png")
+                //chargement foreground              
+                this.load.image("foreground","assets/Cascade.png")
+                // chargement tuiles de jeu
+                this.load.image("Phaser_tuilesdejeu", "assets/tuilesJeu.png");
+                // chargement de la carte
+                this.load.tilemapTiledJSON("carte", "assets/map.json");  
+                //chargement étoile
+                this.load.image('star', 'assets/star.png');
+                //chargement plateforme
+                this.load.image('platforms', 'assets/platforms.png');
+                //chargement danger
+                this.load.image('danger', 'assets/danger.png');
+
+                //chargement du personnage
+                
+                this.load.spritesheet("img_perso", "assets/Perso_Design_Jeu_Alpha.png", {
+                    frameWidth: 263,
+                    frameHeight: 541
+                }); 
+                               
+                //this.load.spritesheet('persoX','assets/perso.png',
+                //    { frameWidth: 24, frameHeight: 64 });
+            }
+            
+            new Phaser.Game(config);
+            var player; // sprite du joueur 
+            var clavier; //commandes clavier
+            var controller = false; //manette
+            var gameOver = false; //fin de partie
+            var toucheLock = true; //verrouillage des commandes
+            var wallJumpLock = true; //cooldown du wall jump
+            var gameplayLevel = -1; // niveau de gameplay, débloquage de nouvelles mécaniques
+            var idleGaze = false; //Orientation du regard quand le personnage est immobile, selon la dernière direction
+            var text = "" //texte affiché lors d'évènements
+            var hp = 3; //character's hp
+            var iframe = false; //iframe enabled after being hit
+
+            /*//////////////////////////////////////////////////////////////////////////
+
+                            FUNCTION CREATE
+
+            //////////////////////////////////////////////////////////////////////////*/
+
+            function create() {
+                //chargement des essentiels                
+                    //chargement du ciel  
+                        this.skyparallax = this.add.tileSprite(0, 0, 1600, 1600, "sky");
+                        this.skyparallax.setOrigin(0, 0);   
+                        this.skyparallax.setScrollFactor(0.2);
+
+                    //chargement du background        
+                       this.add.image(800, 800, "background");
+                    //chargement de la surface   
+                       this.add.image(800, 800, "surface");
+                    // chargement de la carte
+                      const carteDuNiveau = this.add.tilemap("carte");
+                    // chargement du jeu de tuiles
+                      const tileset = carteDuNiveau.addTilesetImage("tuiles_de_jeu","Phaser_tuilesdejeu");  
+                    
+                //chargement des calques
+                    // chargement du calque calque_terrain
+                       const calque_terrain = carteDuNiveau.createLayer("terrain", tileset);  
+                       calque_terrain.setCollisionByProperty({ estSolide: true }); 
+
+                    // chargement du calque calque_Dangers
+                        const calque_Dangers = carteDuNiveau.createLayer("dangers_passifs", tileset);
+
+
+                    //Apparition du joueur
+                        player = this.physics.add.sprite(50, 200, 'img_perso'); 
+                        player.setCollideWorldBounds(true);
+                    // ajout d'une collision entre le joueur et les calques plateformes, terrain, dangers
+                        this.physics.add.collider(player, calque_terrain);  
+                        this.physics.add.collider(player, calque_Dangers);        
+
+                    //chargement du calque_cosmetics
+                        const calque_cosmetics = carteDuNiveau.createLayer("Cosmetics",tileset);  
+                                        
+                    //chargement du calque_cosmetics_pratique_3
+                        const calque_cosmetics_3 = carteDuNiveau.createLayer("Cosmetics_Pratique_3",tileset);  
+
+                    //chargement du calque_cosmetics_pratique_2
+                        const calque_cosmetics_2 = carteDuNiveau.createLayer("Cosmetics_Pratique_2",tileset);  
+
+                    //chargement du calque_cosmetics_pratique
+                        const calque_cosmetics_1 = carteDuNiveau.createLayer("Cosmetics_Pratique",tileset);
+                   
+
+                    //chargement du calque_plateformes
+                    plateformes = this.physics.add.group();
+                        calque_platforms = carteDuNiveau.getObjectLayer("platforms");
+                        //Safe spot to land on
+                        calque_platforms.objects.forEach( calque_platforms =>{
+                            const plateformeichiante = plateformes.create( calque_platforms.x + 16, calque_platforms.y +3, "platforms").body.setAllowGravity(false).setImmovable(true);});
+                            this.physics.add.collider(plateformes, player);
+
+                    //chargement du calque_mechanics
+                        bonus_mechanics = this.physics.add.group();
+                        calque_new_mechanics = carteDuNiveau.getObjectLayer("new_mechanics");
+                        //Overlap des bonus
+                        calque_new_mechanics.objects.forEach( calque_new_mechanics =>{
+                            const mechanichiante = bonus_mechanics.create( calque_new_mechanics.x + 16, calque_new_mechanics.y +16, "star").body.setAllowGravity(false);});
+                            this.physics.add.overlap(bonus_mechanics, player, collectStar);
+
+
+                    //chargement des hitboxes des dangers                    
+                    feuilles = this.physics.add.group();
+                        calque_hitboxes = carteDuNiveau.getObjectLayer("Danger_Hitboxes");
+                        //Safe spot to land on
+                        calque_hitboxes.objects.forEach( calque_hitboxes =>{
+                            const feuillichiante = feuilles.create( calque_hitboxes.x + 16, calque_hitboxes.y +16, "danger").body.setAllowGravity(false).setImmovable(true);});
+                            this.physics.add.overlap(feuilles, player, hitLeaf);
+                            
+
+                //chargement du foreground (cascade)
+                this.add.image(800, 800, "foreground");  
+
+                //chargement du calque_cosmetics_Cascade (ajustement du visuel final)
+                const calque_cosmetics_cascade = carteDuNiveau.createLayer("Cosmetics_Cascade",tileset);
+                // Display de texte
+                    title=this.add.text(160,260,text,{fontSize:'16px',fill:'#000'}).setScrollFactor(0);
+
+                //Intégration des commandes
+                    clavier = this.input.keyboard.createCursorKeys();
+                    //Activation Manette
+                    this.input.gamepad.once('connected', function (pad) {
+                        controller = pad;
+                    }); 
+
+                //Caméra
+                    // redimensionnement du monde avec les dimensions calculées via tiled
+                    this.physics.world.setBounds(0, 0, 1600, 1600);
+                    //  ajout du champs de la caméra de taille identique à celle du monde
+                    this.cameras.main.setBounds(0, 0, 1600, 1600);
+                    // ancrage de la caméra sur le joueur
+                    this.cameras.main.startFollow(player);
+                    this.cameras.main.setZoom(1.5);
+            }
+            
+            /*//////////////////////////////////////////////////////////////////////////
+
+                            FUNCTION UPDATE
+
+            //////////////////////////////////////////////////////////////////////////*/
+
+            function update(){
+
+            //déplacement
+                //droite
+                if ((clavier.right.isDown || controller.right ) && toucheLock) {
+                    player.setVelocityX(200);
+                    /*idleGaze = true;*/} 
+                //gauche
+                else if ((clavier.left.isDown || controller.left) && toucheLock) {
+                    player.setVelocityX(-200);
+                    /*idleGaze = false;*/}
+                //idle
+                else if (clavier.left.isUp && clavier.right.isUp && toucheLock){                    
+                    player.setVelocityX(0);} 
+                
+                //Saut
+                if ((clavier.up.isDown|| controller.A) && player.body.blocked.down && (gameplayLevel >= 1)&& toucheLock) {
+                    player.setVelocityY(-300);}  
+
+                // Wall grab
+                if ((clavier.left.isDown || clavier.right.isDown || controller.left || controller.right) && (player.body.blocked.left || player.body.blocked.right) && (gameplayLevel >= 2)){
+                    wallGrab();}
+                    
+                //check game over    
+                if (gameOver){
+                    toucheLock = false;
+                }
+            }
+            /*//////////////////////////////////////////////////////////////////////////
+            
+                            FUNCTIONS FOR THE GAME
+            
+            /////////////////////////////////////////////////////////////////////////*/
+
+            //Interaction murs
+                //déverouillage des touches
+                function lockTouches(){toucheLock = true;}
+                //déverouillage du wall jump
+                function lockWallJump(){wallJumpLock = true;}
+                //Optimisé, latéralisation finie!
+                function wallGrab(){
+                    //grimpe si le gameplay 3 est débloqué                    
+                    if ((clavier.left.isDown || clavier.right.isDown || controller.left|| controller.right) && gameplayLevel >=3){
+                            player.setVelocityY(-55);
+                            player.setVelocityX(0);
+                        } else{
+                            player.setVelocityY(-5);
+                            player.setVelocityX(0);
+                        }
+                    //saute si le gameplay 2 est débloqué
+                    if ((clavier.up.isDown || controller.A ) && wallJumpLock){
+                        //bloquage des touches pour éviter interférence 
+                        toucheLock = false;
+                        //début cooldown wall jump    
+                        wallJumpLock = false;
+                        //paramètres d'éjection
+                        if ((clavier.right.isDown || controller.right )){player.setVelocityX(-150);}
+                        else {player.setVelocityX(150);}                           
+                        player.setVelocityY(-300); 
+                        //fin bloquage des touches          
+                        setTimeout(lockTouches, 200)
+                        //fin du cooldown wall jump
+                        setTimeout(lockWallJump, 1000)
+                    }
+                }
+
+            //Amélioration du kit de déplacement
+                function collectStar(player, bonus_mechanics){
+                    bonus_mechanics.disableBody(true, true); // l’étoile disparaît
+                    gameplayLevel += 1; //augmente le niveau de mécanique de 1
+                    //nouveau texte indiquant le bonus ramassé
+                    if (gameplayLevel == 0){
+                        text="My beloved is on the other side"
+                    }
+                    else if (gameplayLevel == 1){text = "I can now jump!";  
+                    }   
+                    else if (gameplayLevel == 2){text = "I can now grab walls and jump from there!";  
+                    }   
+                    else if (gameplayLevel == 3){text = "I can now climb walls!";  
+                    }   
+                    else if (gameplayLevel == 4){text= "Finally I arrived! Now we can marry!"  ; 
+                    gameOver = true;
+                    player.setTint(0xff00ff);               
+                    }   
+                    if (gameplayLevel != 5){updateTitle();}
+                }
+            
+            //Dangers, feuilles vertes
+                function hitLeaf(player, leaf){
+                    player.setTint(0x00ff00);
+                    gameOver = true;
+                    text="Yikes, a leaf in my Wedding Cake?!";
+                    updateTitle();
+                }
+
+            //Iframe after being hit
+                //no enemies yet
+
+            //Nettoyeur de texte    
+                function removeText() {
+                    this.title.visible = false;
+                }
+            //Actualisation title
+            function updateTitle(){
+                    title.setText(text);
+                    this.title.visible = true;
+                // disparition texte
+                if (gameOver == false){
+                setTimeout(removeText, 2000);
+                }
+            }
+
+        </script>
+        <h1>Controls:</h1>
+        <p>
+            ← / → = walk/climb right and left<br>
+            ↑ = jump<br>
+            ← + ↑ / → + ↑ = wall jump<br>
+        </p>
+    </body>
+</html>
